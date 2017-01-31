@@ -1,10 +1,14 @@
-import {merge, set} from 'cerebral/operators'
+import {merge, set, when} from 'cerebral/operators'
 import {input, state} from 'cerebral/tags'
 
 import createTodo from '../actions/createTodo'
 import postTodo from '../actions/postTodo'
 
 export default [
+  when(state`app.todos`), {
+    true: [],
+    false: [set(state`app.todos`, {})]
+  },
   createTodo,
   set(state`app.newTodoTitle`, ''),
   set(state`app.isSaving`, true),

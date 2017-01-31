@@ -15,13 +15,13 @@ const controller = Controller({
     app: App,
     router: Router({
       onlyHash: true,
-      filterFalsy: true,
+      filterFalsy: false,
       routes: [
         {path: '/', signal: 'app.rootRouted'},
         // simple map to signal. all parsed path and queries params goes to signal
         // {path: '/:filter', signal: 'app.filterClicked'}
         // map to signal + state
-        {path: '/:filterName', signal: 'app.filterClicked', map: {filterName: input`filter`, title: state`app.newTodoTitle`}}
+        {path: '/:filterName', signal: 'app.filterClicked', map: {filterName: input`filter`, todos: state`app.todos`}}
         // map to state only.
         // {path: '/:filterName', map: {filterName: state`app.filter`, title: state`app.newTodoTitle`}}
       ]

@@ -1,5 +1,5 @@
 import {flattenConfig, getRoutesBySignal, getPath} from './utils'
-import {propsDiffer} from 'cerebral/lib/utils'
+import {getChangedProps} from 'cerebral/lib/utils'
 
 export default class Router {
   constructor (controller, addressbar, mapper, options) {
@@ -76,10 +76,13 @@ export default class Router {
 
     if (stateMapping.length) {
       console.log('set state from url change')
-      stateMapping.forEach((key) => {
-        this.controller.model.set(map[key].getPath(getters).split('.'), values[key] || null)
-        // TODO: inform debugger model changed
-      })
+      this.controller.runSignal('router.routed', [
+        ({state, resolve}) => {
+          stateMapping.forEach((key) => {
+            state.set(resolve.path(map[key]), values[key] || null)
+          })
+        }
+      ])
       this.controller.flush()
     }
 
@@ -91,7 +94,7 @@ export default class Router {
     }
 
     const prevSignal = (this.routesConfig[this.activeRoute.route] || {}).signal
-    if (signal && (prevSignal !== signal || propsDiffer(payload, this.activeRoute.payload))) {
+    if (signal && (prevSignal !== signal || getChangedProps(payload || {}, this.activeRoute.payload || {}))) {
       console.log('start signal from url change')
       this.controller.getSignal(signal)(payload)
     }
